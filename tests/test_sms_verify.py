@@ -20,13 +20,21 @@ class SMSVerifyTestCase(unittest.TestCase):
         )
 
     def test_generate_one_time_code(self):
+        # Act
         code = self.sms_verify.generate_one_time_code()
+
+        # Assert
         self.assertTrue(isinstance(code, int))
         self.assertRegex(str(code), r'^\d{6}$')
 
     def test_request(self):
+        # Arrange
         self.sms_verify.generate_one_time_code = MagicMock(return_value=self.otp)
+
+        # Act
         self.sms_verify.request(self.phone_number)
+
+        # Assert
         self.sms_verify.cache.set.assert_called_once_with(
             self.phone_number,
             self.otp,
@@ -39,33 +47,58 @@ class SMSVerifyTestCase(unittest.TestCase):
         )
 
     def test_verify_with_phone_without_otp(self):
+        # Arrange
         self.sms_verify.cache.get.return_value = None
+
+        # Act
         ret = self.sms_verify.verify(self.phone_number, 'fake')
+
+        # Assert
         self.assertFalse(ret)
         self.sms_verify.cache.get.assert_called_once_with(self.phone_number)
 
     def test_verify_with_phone_with_correct_otp(self):
+        # Arrange
         self.sms_verify.cache.get.return_value = self.otp
+
+        # Act
         ret = self.sms_verify.verify(self.phone_number, self.generate_sms_message(self.otp))
+
+        # Assert
         self.assertTrue(ret)
         self.sms_verify.cache.get.assert_called_once_with(self.phone_number)
 
     def test_verify_with_phone_with_incorrect_otp(self):
+        # Arrange
         self.sms_verify.cache.get.return_value = self.otp
+
+        # Act
         ret = self.sms_verify.verify(self.phone_number, self.generate_sms_message(self.otp + 1))
+
+        # Assert
         self.assertFalse(ret)
         self.sms_verify.cache.get.assert_called_once_with(self.phone_number)
 
     def test_reset_with_phone_without_otp(self):
+        # Arrange
         self.sms_verify.cache.get.return_value = None
+
+        # Act
         ret = self.sms_verify.reset(self.phone_number)
+
+        # Assert
         self.assertFalse(ret)
         self.sms_verify.cache.get.assert_called_once_with(self.phone_number)
         self.sms_verify.cache.pop.assert_not_called()
 
     def test_reset_with_phone_with_otp(self):
+        # Arrange
         self.sms_verify.cache.get.return_value = self.otp
+
+        # Act
         ret = self.sms_verify.reset(self.phone_number)
+
+        # Assert
         self.assertTrue(ret)
         self.sms_verify.cache.get.assert_called_once_with(self.phone_number)
         self.sms_verify.cache.pop.assert_called_once_with(self.phone_number)
