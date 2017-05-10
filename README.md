@@ -45,7 +45,7 @@ Now that the application is configured, we need to install our dependencies from
 pip install -r requirements.txt
 ```
 
-Now we should be all set! Run the application using the `npm start` command.
+Now we should be all set! Run the application using the command.
 
 ```bash
 python manage.py runserver
