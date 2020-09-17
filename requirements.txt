@@ -1,5 +1,5 @@
 Flask==0.12.1
 flask-script==2.0.5
-twilio==6.9.0
+twilio==6.45.2
 python-dotenv==0.6.4
 
